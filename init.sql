@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS `rinha`.`clientes` (
 DROP TABLE IF EXISTS `rinha`.`transacoes`;
 
 CREATE TABLE IF NOT EXISTS `rinha`.`transacoes` (
-  `id` INT UNSIGNED NOT NULL,
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `valor` INT NULL,
   `tipo` CHAR(1) NULL,
   `descricao` VARCHAR(10) NULL,
