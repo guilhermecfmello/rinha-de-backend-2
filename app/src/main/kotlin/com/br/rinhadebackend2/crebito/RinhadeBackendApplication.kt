@@ -1,4 +1,4 @@
-package com.br.rinhadebackend2.RinhadeBackend
+package com.br.rinhadebackend2.crebito
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
