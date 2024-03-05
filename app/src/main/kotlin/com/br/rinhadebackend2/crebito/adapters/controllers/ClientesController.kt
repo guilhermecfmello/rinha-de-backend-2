@@ -23,7 +23,7 @@ class ClientesController(
         idCliente: Int
     ): Extrato {
        return try{
-            val transacoes = transacaoRepository.findAll()
+            val transacoes = transacaoRepository.findLast10TransactionsByClienteId(clienteId = idCliente)
             val extrato = Extrato(
                 saldo = Saldo(
                     total = transacoes[0].cliente!!.limite!!,
