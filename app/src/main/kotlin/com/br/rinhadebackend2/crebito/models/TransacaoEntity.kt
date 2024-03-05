@@ -13,8 +13,10 @@ data class TransacaoEntity(
     val tipo: String,
     val descricao: String,
     val realizadaEm: LocalDateTime? = null,
-    val idCliente: Int
+    @ManyToOne
+    @JoinColumn(name = "id_cliente")
+    val cliente: ClienteEntity? = null
 ) {
     // Default constructor
-    constructor() : this(null, 0, "", "", null, 0)
+    constructor() : this(null, 0, "", "", null, null)
 }

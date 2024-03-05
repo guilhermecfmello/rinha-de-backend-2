@@ -3,8 +3,7 @@ package com.br.rinhadebackend2.crebito.adapters.controllers
 import com.br.rinhadebackend2.crebito.adapters.DateTimeProvider
 import com.br.rinhadebackend2.crebito.adapters.repositories.ClienteRepository
 import com.br.rinhadebackend2.crebito.adapters.repositories.TransacaoRepository
-import com.br.rinhadebackend2.crebito.models.TransacaoEntity
-import com.br.rinhadebackend2.crebito.models.TransacaoRequest
+import com.br.rinhadebackend2.crebito.models.*
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -22,12 +21,20 @@ class ClientesController(
     fun getExtrato(
         @PathVariable
         idCliente: Int
-    ) {
-        try{
+    ): Extrato {
+       return try{
             val transacoes = transacaoRepository.findAll()
-            println(transacoes)
+            val extrato = Extrato(
+                saldo = Saldo(
+                    total = transacoes[0].cliente!!.limite!!,
+                    limite = transacoes[0].cliente!!.limite!!,
+                    dataExtrato = dateTimeProvider.instante()
+                ),
+                ultimasTransacoes = transacoes
+            )
+           extrato
         } catch (e: Exception){
-            println(e)
+            throw e
         }
     }
 
@@ -39,10 +46,11 @@ class ClientesController(
         transacaoRequest: TransacaoRequest
     ) {
         val transacaoEntity = TransacaoEntity(
+            id = null,
             valor = transacaoRequest.valor,
             tipo = transacaoRequest.tipo,
             descricao = transacaoRequest.descricao,
-            idCliente = idCliente,
+            cliente = ClienteEntity(id = idCliente),
             realizadaEm = dateTimeProvider.instante()
         )
         transacaoRepository.save(transacaoEntity)

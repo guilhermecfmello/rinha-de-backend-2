@@ -9,7 +9,9 @@ import jakarta.persistence.Table
 data class ClienteEntity(
     @Id
     val id: Int,
-    val nome: String,
-    val limite: Long,
-    val saldoInicial: Long
-)
+    val nome: String? = null,
+    val limite: Long? = null,
+    val saldoInicial: Long? = null
+){
+    constructor(): this(0)
+}
