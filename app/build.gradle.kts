@@ -19,11 +19,20 @@ repositories {
 }
 
 dependencies {
-	implementation("org.springframework.boot:spring-boot-starter-actuator")
+	// Spring web
 	implementation("org.springframework.boot:spring-boot-starter-web")
+	// Actuator
+	implementation("org.springframework.boot:spring-boot-starter-actuator")
+	// Serializer
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+
 	implementation("io.micrometer:micrometer-tracing-bridge-brave")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
+
+	// JPA
+	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+	implementation("org.mariadb.jdbc:mariadb-java-client:2.7.4")
+
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 
