@@ -21,7 +21,8 @@ DROP TABLE IF EXISTS `rinha`.`clientes`;
 CREATE TABLE IF NOT EXISTS `rinha`.`clientes` (
   `id` TINYINT(1) UNSIGNED NOT NULL AUTO_INCREMENT,
   `nome` VARCHAR(45),
-  `limite` INT NULL,
+  `limite` INT NOT NULL,
+  `saldo_inicial` INT NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`)
 ) ENGINE = InnoDB;
 
@@ -36,23 +37,23 @@ CREATE TABLE IF NOT EXISTS `rinha`.`transacoes` (
   `tipo` CHAR(1) NULL,
   `descricao` VARCHAR(10) NULL,
   `realizada_em` DATETIME NULL,
-  `idCliente` TINYINT(1) UNSIGNED NULL,
+  `id_cliente` TINYINT(1) UNSIGNED NULL,
   PRIMARY KEY (`id`),
-  INDEX `client_fk_idx` (`idCliente` ASC) VISIBLE,
+  INDEX `client_fk_idx` (`id_cliente` ASC) VISIBLE,
   CONSTRAINT `client_fk`
-    FOREIGN KEY (`idCliente`)
+    FOREIGN KEY (`id_cliente`)
     REFERENCES `rinha`.`clientes` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
 ) ENGINE = InnoDB;
 
-INSERT INTO clientes (nome, limite)
+INSERT INTO clientes (nome, limite, saldo_inicial)
   VALUES
-    ('o barato sai caro', 1000 * 100),
-    ('zan corp ltda', 800 * 100),
-    ('les cruders', 10000 * 100),
-    ('padaria joia de cocaia', 100000 * 100),
-    ('kid mais', 5000 * 100);
+    ('o barato sai caro', 1000 * 100, 0),
+    ('zan corp ltda', 800 * 100, 0),
+    ('les cruders', 10000 * 100, 0),
+    ('padaria joia de cocaia', 100000 * 100, 0),
+    ('kid mais', 5000 * 100, 0);
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
