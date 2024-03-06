@@ -1,5 +1,6 @@
 package com.br.rinhadebackend2.crebito.adapters.controllers
 
+import com.br.rinhadebackend2.crebito.adapters.CreditarUseCase
 import com.br.rinhadebackend2.crebito.adapters.DateTimeProvider
 import com.br.rinhadebackend2.crebito.adapters.repositories.ClienteRepository
 import com.br.rinhadebackend2.crebito.adapters.repositories.TransacaoRepository
@@ -14,7 +15,8 @@ import org.springframework.web.bind.annotation.RestController
 class ClientesController(
     private val dateTimeProvider: DateTimeProvider,
     private val transacaoRepository: TransacaoRepository,
-    private val clienteRepository: ClienteRepository
+    private val clienteRepository: ClienteRepository,
+    private val creditarUseCase: CreditarUseCase
 ) {
 
     @GetMapping("/clientes/{idCliente}/extrato")
@@ -45,15 +47,15 @@ class ClientesController(
         @RequestBody
         transacaoRequest: TransacaoRequest
     ) {
-        val transacaoEntity = TransacaoEntity(
-            id = null,
-            valor = transacaoRequest.valor,
-            tipo = transacaoRequest.tipo,
-            descricao = transacaoRequest.descricao,
-            cliente = ClienteEntity(id = idCliente),
-            realizadaEm = dateTimeProvider.instante()
-        )
-        transacaoRepository.save(transacaoEntity)
+        try{
+            when(transacaoRequest.tipo){
+                "c" -> creditarUseCase.execute(idCliente, transacaoRequest)
+                "d" -> TODO("")
+            }
+        } catch (e: Exception){
+            // TODO: Deal with errors
+            throw e
+        }
     }
 
 }
