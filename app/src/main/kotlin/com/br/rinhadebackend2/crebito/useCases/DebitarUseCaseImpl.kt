@@ -19,7 +19,7 @@ class DebitarUseCaseImpl(
 
     override fun execute(idCliente: Int, transacaoRequest: TransacaoRequest): TransacaoResponse {
         val cliente = clienteRepository.findById(idCliente).orElseThrow {
-            EntityNotFoundException("Entity not found $idCliente")
+            EntityNotFoundException("Cliente nao encontrado $idCliente")
         }
 
         validarValorTransacao(cliente, transacaoRequest)
