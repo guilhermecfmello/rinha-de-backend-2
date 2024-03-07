@@ -33,6 +33,10 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.mariadb.jdbc:mariadb-java-client:2.7.4")
 
+	// Validators
+	implementation("org.springframework.boot:spring-boot-starter-validation")
+	implementation("jakarta.validation:jakarta.validation-api:3.0.2")
+
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 
