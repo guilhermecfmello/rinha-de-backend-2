@@ -3,14 +3,11 @@ package com.br.rinhadebackend2.crebito.adapters.controllers
 import com.br.rinhadebackend2.crebito.adapters.CreditarUseCase
 import com.br.rinhadebackend2.crebito.adapters.DateTimeProvider
 import com.br.rinhadebackend2.crebito.adapters.DebitarUseCase
-import com.br.rinhadebackend2.crebito.adapters.repositories.ClienteRepository
 import com.br.rinhadebackend2.crebito.adapters.repositories.TransacaoRepository
-import com.br.rinhadebackend2.crebito.models.*
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RestController
+import com.br.rinhadebackend2.crebito.models.Extrato
+import com.br.rinhadebackend2.crebito.models.Saldo
+import com.br.rinhadebackend2.crebito.models.TransacaoRequest
+import org.springframework.web.bind.annotation.*
 
 @RestController
 class ClientesController(

@@ -9,7 +9,6 @@ import com.br.rinhadebackend2.crebito.models.TransacaoEntity
 import com.br.rinhadebackend2.crebito.models.TransacaoRequest
 import com.br.rinhadebackend2.crebito.models.TransacaoResponse
 import jakarta.persistence.EntityNotFoundException
-import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException
 import org.springframework.stereotype.Component
 
 @Component

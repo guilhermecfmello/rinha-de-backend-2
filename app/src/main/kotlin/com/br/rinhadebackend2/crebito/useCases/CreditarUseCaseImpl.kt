@@ -8,10 +8,7 @@ import com.br.rinhadebackend2.crebito.models.TransacaoEntity
 import com.br.rinhadebackend2.crebito.models.TransacaoRequest
 import com.br.rinhadebackend2.crebito.models.TransacaoResponse
 import jakarta.persistence.EntityNotFoundException
-import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException
-import org.springframework.data.jpa.domain.AbstractPersistable_.id
 import org.springframework.stereotype.Component
-import java.time.LocalDateTime
 
 @Component
 class CreditarUseCaseImpl(
