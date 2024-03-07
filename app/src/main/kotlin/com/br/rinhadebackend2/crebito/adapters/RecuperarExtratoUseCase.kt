@@ -1,4 +1,4 @@
-package com.br.rinhadebackend2.crebito.adapters.repositories
+package com.br.rinhadebackend2.crebito.adapters
 
 import com.br.rinhadebackend2.crebito.models.Extrato
 

@@ -1,4 +1,4 @@
-package com.br.rinhadebackend2.crebito.models
+package com.br.rinhadebackend2.crebito.adapters.repositories.models
 
 import jakarta.persistence.*
 import java.time.LocalDateTime
@@ -17,6 +17,5 @@ data class TransacaoEntity(
     @JoinColumn(name = "id_cliente")
     val cliente: ClienteEntity? = null
 ) {
-    // Default constructor
     constructor() : this(null, 0, "", "", null, null)
 }

@@ -1,4 +1,4 @@
-package com.br.rinhadebackend2.crebito.models
+package com.br.rinhadebackend2.crebito.adapters.repositories.models
 
 import jakarta.persistence.Entity
 import jakarta.persistence.Id

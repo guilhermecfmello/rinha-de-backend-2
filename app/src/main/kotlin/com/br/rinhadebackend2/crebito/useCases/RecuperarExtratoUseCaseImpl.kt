@@ -2,14 +2,14 @@ package com.br.rinhadebackend2.crebito.useCases
 
 import com.br.rinhadebackend2.crebito.adapters.DateTimeProvider
 import com.br.rinhadebackend2.crebito.adapters.repositories.ClienteRepository
-import com.br.rinhadebackend2.crebito.adapters.repositories.RecuperarExtratoUseCase
+import com.br.rinhadebackend2.crebito.adapters.RecuperarExtratoUseCase
 import com.br.rinhadebackend2.crebito.adapters.repositories.TransacaoRepository
 import com.br.rinhadebackend2.crebito.models.Extrato
 import com.br.rinhadebackend2.crebito.models.Saldo
-import com.br.rinhadebackend2.crebito.models.TransacaoRequest
+import com.br.rinhadebackend2.crebito.models.Transacao
 import jakarta.persistence.EntityNotFoundException
-import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException
 import org.springframework.stereotype.Component
+import java.time.LocalDateTime
 
 @Component
 class RecuperarExtratoUseCaseImpl(
@@ -34,7 +34,14 @@ class RecuperarExtratoUseCaseImpl(
                 limite = cliente.limite!!,
                 dataExtrato = dateTimeProvider.instante()
             ),
-            ultimasTransacoes = transacoes
+            ultimasTransacoes = transacoes.map {
+                Transacao(
+                    valor = it.valor,
+                    tipo = it.tipo,
+                    descricao = it.descricao,
+                    realizadaEm = it.realizadaEm,
+                )
+            }
         )
 
     }

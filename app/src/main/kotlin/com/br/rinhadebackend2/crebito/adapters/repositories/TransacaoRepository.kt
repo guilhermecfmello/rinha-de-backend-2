@@ -1,6 +1,6 @@
 package com.br.rinhadebackend2.crebito.adapters.repositories
 
-import com.br.rinhadebackend2.crebito.models.TransacaoEntity
+import com.br.rinhadebackend2.crebito.adapters.repositories.models.TransacaoEntity
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param

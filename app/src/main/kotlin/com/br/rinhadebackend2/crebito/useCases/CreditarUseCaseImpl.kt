@@ -3,10 +3,11 @@ package com.br.rinhadebackend2.crebito.useCases
 import com.br.rinhadebackend2.crebito.adapters.CreditarUseCase
 import com.br.rinhadebackend2.crebito.adapters.repositories.ClienteRepository
 import com.br.rinhadebackend2.crebito.adapters.repositories.TransacaoRepository
-import com.br.rinhadebackend2.crebito.models.ClienteEntity
-import com.br.rinhadebackend2.crebito.models.TransacaoEntity
-import com.br.rinhadebackend2.crebito.models.TransacaoRequest
+import com.br.rinhadebackend2.crebito.adapters.repositories.models.TransacaoEntity
+import com.br.rinhadebackend2.crebito.models.Cliente
+import com.br.rinhadebackend2.crebito.models.Transacao
 import com.br.rinhadebackend2.crebito.models.TransacaoResponse
+import com.br.rinhadebackend2.crebito.useCases.mappers.ClienteMapper
 import jakarta.persistence.EntityNotFoundException
 import org.springframework.stereotype.Component
 
@@ -16,36 +17,43 @@ class CreditarUseCaseImpl(
     private val clienteRepository: ClienteRepository
 ) : CreditarUseCase {
 
-    override fun execute(idCliente: Int, transacaoRequest: TransacaoRequest): TransacaoResponse {
-        val cliente = clienteRepository.findById(idCliente).orElseThrow {
-            EntityNotFoundException("Entity not found $idCliente")
-        }
-        val clienteComSaldoAtualizado = atualizarSaldoCliente(cliente, transacaoRequest.valor)
-        val novaTransacaoEntity = criarNovaTransacao(transacaoRequest)
+    private val clienteMapper = ClienteMapper
+
+    override fun execute(idCliente: Int, transacao: Transacao): Cliente {
+        val cliente = buscaClientePorId(idCliente)
+
+        val clienteComSaldoAtualizado = atualizarSaldoCliente(cliente, transacao.valor)
+        val novaTransacaoEntity = criarNovaTransacao(transacao)
 
         salvarCliente(clienteComSaldoAtualizado)
         salvarTransacao(novaTransacaoEntity)
 
-        return TransacaoResponse(
-            limite = clienteComSaldoAtualizado.limite!!,
-            saldo = clienteComSaldoAtualizado.saldoInicial!!
-        )
+        return clienteComSaldoAtualizado
     }
-    private fun atualizarSaldoCliente(cliente: ClienteEntity, valorTransacao: Long): ClienteEntity {
+
+    private fun buscaClientePorId(idCliente: Int) = clienteRepository.findById(
+        idCliente
+    ).orElseThrow {
+        EntityNotFoundException("Entity not found $idCliente")
+    }!!.let { clienteMapper.from(it) }
+
+    private fun atualizarSaldoCliente(cliente: Cliente, valorTransacao: Long): Cliente {
         val novoSaldo = cliente.saldoInicial!! + valorTransacao
         return cliente.copy(saldoInicial = novoSaldo)
     }
 
-    private fun criarNovaTransacao(transacaoRequest: TransacaoRequest): TransacaoEntity {
+    private fun criarNovaTransacao(transacao: Transacao): TransacaoEntity {
         return TransacaoEntity(
-            valor = transacaoRequest.valor,
-            tipo = transacaoRequest.tipo,
-            descricao = transacaoRequest.descricao
+            valor = transacao.valor,
+            tipo = transacao.tipo,
+            descricao = transacao.descricao
         )
     }
 
-    private fun salvarCliente(cliente: ClienteEntity) {
-        clienteRepository.save(cliente)
+    private fun salvarCliente(cliente: Cliente) {
+        clienteRepository.save(
+            clienteMapper.from(cliente)
+        )
     }
 
     private fun salvarTransacao(transacaoEntity: TransacaoEntity) {
