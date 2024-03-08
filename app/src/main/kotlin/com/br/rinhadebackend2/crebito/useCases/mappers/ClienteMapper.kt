@@ -9,13 +9,13 @@ object ClienteMapper {
         id = clienteEntity.id,
         nome = clienteEntity.nome,
         limite = clienteEntity.limite,
-        saldoInicial = clienteEntity.saldoInicial
+        saldo = clienteEntity.saldo
     )
 
     fun from(cliente: Cliente) = ClienteEntity(
         id = cliente.id,
         nome = cliente.nome,
         limite = cliente.limite,
-        saldoInicial = cliente.saldoInicial
+        saldo = cliente.saldo
     )
 }

@@ -9,7 +9,6 @@ import com.br.rinhadebackend2.crebito.models.Saldo
 import com.br.rinhadebackend2.crebito.models.Transacao
 import jakarta.persistence.EntityNotFoundException
 import org.springframework.stereotype.Component
-import java.time.LocalDateTime
 
 @Component
 class RecuperarExtratoUseCaseImpl(
@@ -30,7 +29,7 @@ class RecuperarExtratoUseCaseImpl(
 
         return Extrato(
             saldo = Saldo(
-                total = cliente.saldoInicial!!,
+                total = cliente.saldo!!,
                 limite = cliente.limite!!,
                 dataExtrato = dateTimeProvider.instante()
             ),

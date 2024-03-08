@@ -11,7 +11,7 @@ data class ClienteEntity(
     val id: Int,
     val nome: String? = null,
     val limite: Long? = null,
-    val saldoInicial: Long? = null
+    val saldo: Long? = null
 ){
     constructor(): this(0)
 }

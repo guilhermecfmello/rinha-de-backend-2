@@ -7,7 +7,6 @@ import com.br.rinhadebackend2.crebito.adapters.repositories.TransacaoRepository
 import com.br.rinhadebackend2.crebito.adapters.repositories.models.TransacaoEntity
 import com.br.rinhadebackend2.crebito.models.Cliente
 import com.br.rinhadebackend2.crebito.models.Transacao
-import com.br.rinhadebackend2.crebito.models.TransacaoResponse
 import com.br.rinhadebackend2.crebito.useCases.mappers.ClienteMapper
 import jakarta.persistence.EntityNotFoundException
 import org.springframework.stereotype.Component
@@ -40,8 +39,8 @@ class CreditarUseCaseImpl(
     }!!.let { clienteMapper.from(it) }
 
     private fun atualizarSaldoCliente(cliente: Cliente, valorTransacao: Long): Cliente {
-        val novoSaldo = cliente.saldoInicial!! + valorTransacao
-        return cliente.copy(saldoInicial = novoSaldo)
+        val novoSaldo = cliente.saldo!! + valorTransacao
+        return cliente.copy(saldo = novoSaldo)
     }
 
     private fun criarNovaTransacao(transacao: Transacao, cliente: Cliente): TransacaoEntity {

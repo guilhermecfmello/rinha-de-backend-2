@@ -40,7 +40,7 @@ class DebitarUseCaseImpl(
     }!!.let { clienteMapper.from(it) }
 
     private fun validarValorTransacao(cliente: Cliente, transacao: Transacao) {
-        if(transacao.valor > (cliente.saldoInicial!! + cliente.limite!!)) {
+        if(transacao.valor > (cliente.saldo!! + cliente.limite!!)) {
             throw LimiteNaoDisponivelException(transacao.valor, cliente.id)
         }
     }
@@ -63,6 +63,6 @@ class DebitarUseCaseImpl(
     }
 
     private fun calcularNovoSaldoCliente(cliente: Cliente, transacao: Transacao): Cliente {
-        return cliente.copy(saldoInicial = transacao.valor)
+        return cliente.copy(saldo = transacao.valor)
     }
 }

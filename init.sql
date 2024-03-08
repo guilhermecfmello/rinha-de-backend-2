@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS `rinha`.`clientes` (
   `id` TINYINT(1) UNSIGNED NOT NULL AUTO_INCREMENT,
   `nome` VARCHAR(45),
   `limite` INT NOT NULL,
-  `saldo_inicial` INT NOT NULL DEFAULT 0,
+  `saldo` INT NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`)
 ) ENGINE = InnoDB;
 
@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS `rinha`.`transacoes` (
     ON UPDATE NO ACTION
 ) ENGINE = InnoDB;
 
-INSERT INTO clientes (nome, limite, saldo_inicial)
+INSERT INTO clientes (nome, limite, saldo)
   VALUES
     ('o barato sai caro', 1000 * 100, 0),
     ('zan corp ltda', 800 * 100, 0),
