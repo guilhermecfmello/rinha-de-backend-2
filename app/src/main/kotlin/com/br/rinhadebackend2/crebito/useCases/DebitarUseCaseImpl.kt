@@ -1,5 +1,6 @@
 package com.br.rinhadebackend2.crebito.useCases
 
+import com.br.rinhadebackend2.crebito.adapters.DateTimeProvider
 import com.br.rinhadebackend2.crebito.adapters.DebitarUseCase
 import com.br.rinhadebackend2.crebito.adapters.repositories.ClienteRepository
 import com.br.rinhadebackend2.crebito.adapters.repositories.TransacaoRepository
@@ -14,7 +15,8 @@ import org.springframework.stereotype.Component
 @Component
 class DebitarUseCaseImpl(
     private val transacaoRepository: TransacaoRepository,
-    private val clienteRepository: ClienteRepository
+    private val clienteRepository: ClienteRepository,
+    private val dateTimeProvider: DateTimeProvider
 ) : DebitarUseCase {
 
     private val clienteMapper = ClienteMapper
@@ -26,7 +28,7 @@ class DebitarUseCaseImpl(
         val clienteComSaldoAtualizado = calcularNovoSaldoCliente(cliente, transacao)
 
         salvarCliente(clienteComSaldoAtualizado)
-        salvarTransacao(transacao)
+        salvarTransacao(transacao, clienteComSaldoAtualizado)
 
         return clienteComSaldoAtualizado
     }
@@ -49,11 +51,13 @@ class DebitarUseCaseImpl(
         )
     }
 
-    private fun salvarTransacao(transacao: Transacao) {
+    private fun salvarTransacao(transacao: Transacao, cliente: Cliente) {
         transacaoRepository.save(TransacaoEntity(
                 valor = transacao.valor,
                 tipo = transacao.tipo,
-                descricao = transacao.descricao
+                descricao = transacao.descricao,
+                cliente = clienteMapper.from(cliente),
+                realizadaEm = dateTimeProvider.instante()
             )
         )
     }

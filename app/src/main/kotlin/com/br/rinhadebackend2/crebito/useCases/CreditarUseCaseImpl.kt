@@ -1,6 +1,7 @@
 package com.br.rinhadebackend2.crebito.useCases
 
 import com.br.rinhadebackend2.crebito.adapters.CreditarUseCase
+import com.br.rinhadebackend2.crebito.adapters.DateTimeProvider
 import com.br.rinhadebackend2.crebito.adapters.repositories.ClienteRepository
 import com.br.rinhadebackend2.crebito.adapters.repositories.TransacaoRepository
 import com.br.rinhadebackend2.crebito.adapters.repositories.models.TransacaoEntity
@@ -14,7 +15,8 @@ import org.springframework.stereotype.Component
 @Component
 class CreditarUseCaseImpl(
     private val transacaoRepository: TransacaoRepository,
-    private val clienteRepository: ClienteRepository
+    private val clienteRepository: ClienteRepository,
+    private val dateTimeProvider: DateTimeProvider
 ) : CreditarUseCase {
 
     private val clienteMapper = ClienteMapper
@@ -23,7 +25,7 @@ class CreditarUseCaseImpl(
         val cliente = buscaClientePorId(idCliente)
 
         val clienteComSaldoAtualizado = atualizarSaldoCliente(cliente, transacao.valor)
-        val novaTransacaoEntity = criarNovaTransacao(transacao)
+        val novaTransacaoEntity = criarNovaTransacao(transacao, clienteComSaldoAtualizado)
 
         salvarCliente(clienteComSaldoAtualizado)
         salvarTransacao(novaTransacaoEntity)
@@ -42,11 +44,13 @@ class CreditarUseCaseImpl(
         return cliente.copy(saldoInicial = novoSaldo)
     }
 
-    private fun criarNovaTransacao(transacao: Transacao): TransacaoEntity {
+    private fun criarNovaTransacao(transacao: Transacao, cliente: Cliente): TransacaoEntity {
         return TransacaoEntity(
             valor = transacao.valor,
             tipo = transacao.tipo,
-            descricao = transacao.descricao
+            descricao = transacao.descricao,
+            cliente = clienteMapper.from(cliente),
+            realizadaEm = dateTimeProvider.instante()
         )
     }
 
