@@ -22,7 +22,6 @@ class ClientesController(
         @PathVariable
         idCliente: Int
     ): Extrato {
-        // TODO: Fix empty extrato issue :(
        return recuperarExtratoUseCase.execute(idCliente)
     }
 
