@@ -3,11 +3,11 @@ version: "3.5"
 services:
   crebito-api-1:
     hostname: crebito-api-1
-    build: .
+    build: ./app
     ports:
       - "8081:8080"
     environment:
-      - DB_HOSTNAME=db
+      - DB_HOST=db:3306
       - DB_INITIAL_POOL_SIZE=13
       - DB_MAX_POOL_SIZE=13
       - spring
@@ -16,16 +16,16 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.55"
-          memory: "200MB"
+          cpus: "1"
+          memory: "400MB"
 
   crebito-api-2:
     hostname: crebito-api-2
-    build: .
+    build: ./app
     ports:
       - "8082:8080"
     environment:
-      - DB_HOSTNAME=db
+      - DB_HOST=db:3306
       - DB_INITIAL_POOL_SIZE=13
       - DB_MAX_POOL_SIZE=13
       - spring
@@ -34,8 +34,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.55"
-          memory: "200MB"
+          cpus: "1"
+          memory: "400MB"
 
   nginx:
     image: nginx:latest
