@@ -1,6 +1,6 @@
 spring:
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
-    url: jdbc:mariadb://${DB_HOST}/rinha
+    url: jdbc:mariadb://${DB_HOST:localhost:3306}/rinha
     username: admin
     password: 123
