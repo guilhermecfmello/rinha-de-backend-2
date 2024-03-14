@@ -35,8 +35,8 @@ class ClientesController(
     ) {
         val transacao = Transacao(
             transacaoRequest.valor,
-            transacaoRequest.tipo,
-            transacaoRequest.descricao,
+            transacaoRequest.tipo!!,
+            transacaoRequest.descricao!!,
             null
         )
         when(transacao.tipo){

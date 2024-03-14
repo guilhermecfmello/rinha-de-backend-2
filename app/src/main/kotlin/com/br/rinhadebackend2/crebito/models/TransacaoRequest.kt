@@ -8,7 +8,8 @@ data class TransacaoRequest(
     @field:Positive(message = "Valor deve ser maior que zero")
     val valor: Long,
     @field:NotBlank(message = "Tipo deve ser informado")
-    val tipo: String,
+    val tipo: String?,
+    @field:NotBlank(message = "Descricao nao pode ser vazia")
     @field:Size(max = 10, message = "Descricao deve ter tamanho ate 10")
-    val descricao: String
+    val descricao: String?
 )
