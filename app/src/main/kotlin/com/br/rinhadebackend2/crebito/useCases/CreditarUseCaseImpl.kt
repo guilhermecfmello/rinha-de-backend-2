@@ -10,6 +10,7 @@ import com.br.rinhadebackend2.crebito.models.Transacao
 import com.br.rinhadebackend2.crebito.useCases.mappers.ClienteMapper
 import jakarta.persistence.EntityNotFoundException
 import org.springframework.stereotype.Component
+import reactor.core.publisher.Mono
 
 @Component
 class CreditarUseCaseImpl(
@@ -20,23 +21,26 @@ class CreditarUseCaseImpl(
 
     private val clienteMapper = ClienteMapper
 
-    override fun execute(idCliente: Int, transacao: Transacao): Cliente {
-        val cliente = buscaClientePorId(idCliente)
+    override fun execute(idCliente: Int, transacao: Transacao): Mono<Cliente> {
+        return buscaClientePorId(idCliente)
+            .map { cliente ->
+                val clienteComSaldoAtualizado = atualizarSaldoCliente(cliente, transacao.valor)
+                val novaTransacaoEntity = criarNovaTransacao(transacao, clienteComSaldoAtualizado)
 
-        val clienteComSaldoAtualizado = atualizarSaldoCliente(cliente, transacao.valor)
-        val novaTransacaoEntity = criarNovaTransacao(transacao, clienteComSaldoAtualizado)
+                salvarCliente(clienteComSaldoAtualizado)
+                salvarTransacao(novaTransacaoEntity)
 
-        salvarCliente(clienteComSaldoAtualizado)
-        salvarTransacao(novaTransacaoEntity)
-
-        return clienteComSaldoAtualizado
+                clienteComSaldoAtualizado
+            }
     }
 
-    private fun buscaClientePorId(idCliente: Int) = clienteRepository.findById(
-        idCliente
-    ).orElseThrow {
-        EntityNotFoundException("Entity not found $idCliente")
-    }!!.let { clienteMapper.from(it) }
+    private fun buscaClientePorId(idCliente: Int): Mono<Cliente> {
+        return Mono.fromSupplier {
+            clienteRepository.findById(idCliente)
+                .orElseThrow { EntityNotFoundException("Entity not found $idCliente") }
+                .let { clienteMapper.from(it) }
+        }
+    }
 
     private fun atualizarSaldoCliente(cliente: Cliente, valorTransacao: Long): Cliente {
         val novoSaldo = cliente.saldo!! + valorTransacao
@@ -53,13 +57,15 @@ class CreditarUseCaseImpl(
         )
     }
 
-    private fun salvarCliente(cliente: Cliente) {
-        clienteRepository.save(
-            clienteMapper.from(cliente)
-        )
+    private fun salvarCliente(cliente: Cliente): Mono<Void> {
+        return Mono.fromRunnable {
+            clienteRepository.save(clienteMapper.from(cliente))
+        }
     }
 
-    private fun salvarTransacao(transacaoEntity: TransacaoEntity) {
-        transacaoRepository.save(transacaoEntity)
+    private fun salvarTransacao(transacaoEntity: TransacaoEntity): Mono<Void> {
+        return Mono.fromRunnable {
+            transacaoRepository.save(transacaoEntity)
+        }
     }
 }

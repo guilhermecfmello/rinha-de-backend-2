@@ -26,6 +26,8 @@ dependencies {
 	// Serializer
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
+	implementation("org.springframework.boot:spring-boot-starter-webflux") // Add Spring WebFlux for reactive support
+
 	implementation("io.micrometer:micrometer-tracing-bridge-brave")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 

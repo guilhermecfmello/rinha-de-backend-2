@@ -11,6 +11,7 @@ import com.br.rinhadebackend2.crebito.models.Transacao
 import com.br.rinhadebackend2.crebito.useCases.mappers.ClienteMapper
 import jakarta.persistence.EntityNotFoundException
 import org.springframework.stereotype.Component
+import reactor.core.publisher.Mono
 
 @Component
 class DebitarUseCaseImpl(
@@ -21,45 +22,49 @@ class DebitarUseCaseImpl(
 
     private val clienteMapper = ClienteMapper
 
-    override fun execute(idCliente: Int, transacao: Transacao): Cliente {
-        val cliente = buscaClientePorId(idCliente)
-
-        validarValorTransacao(cliente, transacao)
-        val clienteComSaldoAtualizado = calcularNovoSaldoCliente(cliente, transacao)
-
-        salvarCliente(clienteComSaldoAtualizado)
-        salvarTransacao(transacao, clienteComSaldoAtualizado)
-
-        return clienteComSaldoAtualizado
+    override fun execute(idCliente: Int, transacao: Transacao): Mono<Cliente> {
+        return buscaClientePorId(idCliente)
+            .flatMap { cliente ->
+                validarValorTransacao(cliente, transacao)
+                val clienteComSaldoAtualizado = calcularNovoSaldoCliente(cliente, transacao)
+                salvarCliente(clienteComSaldoAtualizado)
+                    .then(salvarTransacao(transacao, clienteComSaldoAtualizado))
+                    .thenReturn(clienteComSaldoAtualizado)
+            }
     }
 
-    private fun buscaClientePorId(idCliente: Int) = clienteRepository.findById(
-        idCliente
-    ).orElseThrow {
-        EntityNotFoundException("Entity not found $idCliente")
-    }!!.let { clienteMapper.from(it) }
+    private fun buscaClientePorId(idCliente: Int): Mono<Cliente> {
+        return Mono.fromSupplier {
+            clienteRepository.findById(idCliente)
+                .orElseThrow { EntityNotFoundException("Entity not found $idCliente") }
+                .let { clienteMapper.from(it) }
+        }
+    }
 
     private fun validarValorTransacao(cliente: Cliente, transacao: Transacao) {
-        if(transacao.valor > (cliente.saldo!! + cliente.limite!!)) {
+        if (transacao.valor > (cliente.saldo!! + cliente.limite!!)) {
             throw LimiteNaoDisponivelException(transacao.valor, cliente.id)
         }
     }
 
-    private fun salvarCliente(cliente: Cliente) {
-        clienteRepository.save(
-            clienteMapper.from(cliente)
-        )
+    private fun salvarCliente(cliente: Cliente): Mono<Void> {
+        return Mono.fromRunnable {
+            clienteRepository.save(clienteMapper.from(cliente))
+        }
     }
 
-    private fun salvarTransacao(transacao: Transacao, cliente: Cliente) {
-        transacaoRepository.save(TransacaoEntity(
-                valor = transacao.valor,
-                tipo = transacao.tipo,
-                descricao = transacao.descricao,
-                cliente = clienteMapper.from(cliente),
-                realizadaEm = dateTimeProvider.instante()
+    private fun salvarTransacao(transacao: Transacao, cliente: Cliente): Mono<Void> {
+        return Mono.fromRunnable {
+            transacaoRepository.save(
+                TransacaoEntity(
+                    valor = transacao.valor,
+                    tipo = transacao.tipo,
+                    descricao = transacao.descricao,
+                    cliente = clienteMapper.from(cliente),
+                    realizadaEm = dateTimeProvider.instante()
+                )
             )
-        )
+        }
     }
 
     private fun calcularNovoSaldoCliente(cliente: Cliente, transacao: Transacao): Cliente {

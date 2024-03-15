@@ -11,6 +11,7 @@ import com.br.rinhadebackend2.crebito.models.TransacaoRequest
 import com.br.rinhadebackend2.crebito.models.TransacaoResponse
 import jakarta.validation.Valid
 import org.springframework.web.bind.annotation.*
+import reactor.core.publisher.Mono
 
 @RestController
 class ClientesController(
@@ -25,29 +26,25 @@ class ClientesController(
     fun getExtrato(
         @PathVariable
         idCliente: Int
-    ): Extrato {
+    ): Mono<Extrato> {
        return recuperarExtratoUseCase.execute(idCliente)
     }
 
     @PostMapping("/clientes/{idCliente}/transacoes")
     fun createTransacao(
-        @PathVariable
-        idCliente: Int,
-        @RequestBody
-        @Valid
-        transacaoRequest: TransacaoRequest
-    ): TransacaoResponse {
+        @PathVariable idCliente: Int,
+        @RequestBody @Valid transacaoRequest: TransacaoRequest
+    ): Mono<TransacaoResponse> {
         val transacao = Transacao(
             transacaoRequest.valor,
             transacaoRequest.tipo!!,
             transacaoRequest.descricao!!,
             null
         )
-        return when(transacao.tipo){
-            "c" -> creditarUseCase.execute(idCliente, transacao).let { transacaoMapper.from(it) }
-            "d" -> debitarUseCase.execute(idCliente, transacao).let { transacaoMapper.from(it) }
-            else -> throw TransacaoInvalidaException(transacaoRequest.tipo)
+        return when (transacao.tipo) {
+            "c" -> creditarUseCase.execute(idCliente, transacao).map { transacaoMapper.from(it) }
+            "d" -> debitarUseCase.execute(idCliente, transacao).map { transacaoMapper.from(it) }
+            else -> Mono.error(TransacaoInvalidaException(transacaoRequest.tipo))
         }
     }
-
 }
