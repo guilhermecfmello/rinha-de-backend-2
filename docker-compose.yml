@@ -16,8 +16,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.5"
-          memory: "200MB"
+          cpus: "1"
+          memory: "500MB"
 
   crebito-api-2:
     hostname: crebito-api-2
@@ -34,13 +34,13 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.5"
-          memory: "200MB"
+          cpus: "1"
+          memory: "500MB"
 
   nginx:
     image: nginx:latest
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./config/nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:
       - crebito-api-1
       - crebito-api-2
@@ -62,7 +62,9 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./config/ddl.sql:/docker-entrypoint-initdb.d/01.sql
+      - ./config/tcl.sql:/docker-entrypoint-initdb.d/02.sql
+      - ./config/dml.sql:/docker-entrypoint-initdb.d/03.sql
     deploy:
       resources:
         limits:

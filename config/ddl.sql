@@ -47,14 +47,6 @@ CREATE TABLE IF NOT EXISTS `rinha`.`transacoes` (
     ON UPDATE NO ACTION
 ) ENGINE = InnoDB;
 
-INSERT INTO clientes (nome, limite, saldo)
-  VALUES
-    ('o barato sai caro', 1000 * 100, 0),
-    ('zan corp ltda', 800 * 100, 0),
-    ('les cruders', 10000 * 100, 0),
-    ('padaria joia de cocaia', 100000 * 100, 0),
-    ('kid mais', 5000 * 100, 0);
-
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
