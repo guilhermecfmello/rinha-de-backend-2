@@ -63,8 +63,7 @@ services:
       - "3306:3306"
     volumes:
       - ./config/ddl.sql:/docker-entrypoint-initdb.d/01.sql
-      - ./config/tcl.sql:/docker-entrypoint-initdb.d/02.sql
-      - ./config/dml.sql:/docker-entrypoint-initdb.d/03.sql
+      - ./config/dml.sql:/docker-entrypoint-initdb.d/02.sql
     deploy:
       resources:
         limits:

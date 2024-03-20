@@ -47,6 +47,57 @@ CREATE TABLE IF NOT EXISTS `rinha`.`transacoes` (
     ON UPDATE NO ACTION
 ) ENGINE = InnoDB;
 
+DROP PROCEDURE IF EXISTS atualiza_saldo_cliente;
+DELIMITER //
+CREATE PROCEDURE atualiza_saldo_cliente(
+    IN id_cliente_arg INT,
+    IN tipo_transacao_arg CHAR(1),
+    IN valor_transacao_arg INT,
+    IN descricao_transacao_arg VARCHAR(10),
+    IN realizada_em_arg DATETIME,
+    OUT saldo_atualizado_return NUMERIC,
+    OUT limite_return NUMERIC
+)
+BEGIN
+	DECLARE quantidade_clientes INT;
+    DECLARE limite_val INT;
+    DECLARE saldo_val INT;
+    DECLARE limite_mais_saldo_val INT;
+    DECLARE novo_saldo_val INT;
+   
+    -- Check if the client exists
+    SELECT COUNT(*) INTO quantidade_clientes FROM clientes WHERE id = id_cliente_arg;
+    
+    IF quantidade_clientes = 0
+	THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'CLIENTE_NAO_ENCONTRADO';
+    END IF;
+    
+     -- Fetch client record
+    SELECT limite, saldo INTO limite_val, saldo_val FROM clientes WHERE id = id_cliente_arg FOR UPDATE;
+    
+    IF tipo_transacao_arg = 'c' THEN
+        SET novo_saldo_val = saldo_val + valor_transacao_arg;
+    ELSEIF tipo_transacao_arg = 'd' THEN
+        SET limite_mais_saldo_val = limite_val + saldo_val;
+        IF valor_transacao_arg > limite_mais_saldo_val THEN
+            SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'VALOR_DEBITO_EXCEDE_LIMITE_CLIENTE';
+		ELSE
+			SET novo_saldo_val = saldo_val - valor_transacao_arg;
+        END IF;
+    END IF;
+    
+    UPDATE clientes SET saldo = novo_saldo_val WHERE id = id_cliente_arg;
+		
+	INSERT INTO transacoes (`valor`, `tipo`, `descricao`, `realizada_em`, `id_cliente`) 
+		VALUES (novo_saldo_val, tipo_transacao_arg, descricao_transacao_arg, realizada_em_arg, id_cliente_arg);
+        
+	SET saldo_atualizado_return = novo_saldo_val;
+  SET limite_return = limite_val;
+END //
+DELIMITER ;
+
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
