@@ -64,14 +64,6 @@ BEGIN
     DECLARE limite_mais_saldo_val INT;
     DECLARE novo_saldo_val INT;
    
-    -- Check if the client exists
-    SELECT COUNT(*) INTO quantidade_clientes FROM clientes WHERE id = id_cliente_arg;
-    
-    IF quantidade_clientes = 0
-	  THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'CLIENTE_NAO_ENCONTRADO';
-    END IF;
-    
      -- Fetch client record
     SELECT limite, saldo INTO limite_val, saldo_val FROM clientes WHERE id = id_cliente_arg FOR UPDATE;
     
@@ -86,7 +78,7 @@ BEGIN
     UPDATE clientes SET saldo = novo_saldo_val WHERE id = id_cliente_arg;
 		
 	INSERT INTO transacoes (`valor`, `tipo`, `descricao`, `realizada_em`, `id_cliente`) 
-		VALUES (novo_saldo_val, 'd', descricao_transacao_arg, realizada_em_arg, id_cliente_arg);
+		VALUES (valor_transacao_arg, 'd', descricao_transacao_arg, realizada_em_arg, id_cliente_arg);
         
 	SET saldo_atualizado_return = novo_saldo_val;
   SET limite_return = limite_val;
@@ -110,14 +102,6 @@ CREATE PROCEDURE creditar_valor_no_cliente(
     DECLARE saldo_val INT;
     DECLARE limite_mais_saldo_val INT;
     DECLARE novo_saldo_val INT;
-   
-    -- Check if the client exists
-    SELECT COUNT(*) INTO quantidade_clientes FROM clientes WHERE id = id_cliente_arg;
-    
-    IF quantidade_clientes = 0
-	  THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'CLIENTE_NAO_ENCONTRADO';
-    END IF;
     
      -- Fetch client record
     SELECT limite, saldo INTO limite_val, saldo_val FROM clientes WHERE id = id_cliente_arg FOR UPDATE;
@@ -127,7 +111,7 @@ CREATE PROCEDURE creditar_valor_no_cliente(
     UPDATE clientes SET saldo = novo_saldo_val WHERE id = id_cliente_arg;
 		
 	  INSERT INTO transacoes (`valor`, `tipo`, `descricao`, `realizada_em`, `id_cliente`) 
-		  VALUES (novo_saldo_val, 'c', descricao_transacao_arg, realizada_em_arg, id_cliente_arg);
+		  VALUES (valor_transacao_arg, 'c', descricao_transacao_arg, realizada_em_arg, id_cliente_arg);
         
 	  SET saldo_atualizado_return = novo_saldo_val;
     SET limite_return = limite_val;
