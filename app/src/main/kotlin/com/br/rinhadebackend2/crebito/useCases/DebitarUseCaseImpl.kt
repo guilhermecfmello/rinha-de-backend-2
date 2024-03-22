@@ -24,29 +24,28 @@ class DebitarUseCaseImpl(
     private val clienteMapper = ClienteMapper
 
     override fun execute(idCliente: Int, transacao: Transacao): Mono<Cliente> {
-        return Mono.fromRunnable{
+        return Mono.fromSupplier{
             val cliente = clienteRepository.findByIdOrNull(
                 idCliente
             ) ?: throw(EntityNotFoundException("Cliente nao encontrado"))
-            runCatching {
-                clienteRepository.debitarValorNoCliente(
+            try {
+                val novoSaldo = clienteRepository.debitarValorNoCliente(
                     cliente.id,
                     transacao.valor,
                     transacao.descricao,
                     dateTimeProvider.instante(),
                     1
                 )
-            }.onFailure {  exception ->
+                clienteMapper.from(
+                    cliente.copy(
+                        saldo = novoSaldo.toLong()
+                    )
+                )
+            } catch (exception: Exception){
                 when(exception){
                     is DataAccessResourceFailureException -> throw LimiteNaoDisponivelException(transacao.valor, cliente.id)
                     else -> throw exception
                 }
-            }.onSuccess {
-                clienteMapper.from(
-                    cliente.copy(
-                        saldo = it.toLong()
-                    )
-                )
             }
         }
     }

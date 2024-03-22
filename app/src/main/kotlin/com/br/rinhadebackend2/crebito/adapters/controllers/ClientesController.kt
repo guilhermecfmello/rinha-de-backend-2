@@ -42,9 +42,11 @@ class ClientesController(
             null
         )
         return when (transacao.tipo) {
-            "c" -> creditarUseCase.execute(idCliente, transacao).map { transacaoMapper.from(it) }
-            "d" -> debitarUseCase.execute(idCliente, transacao).map { transacaoMapper.from(it) }
+            "c" -> creditarUseCase.execute(idCliente, transacao)
+            "d" -> debitarUseCase.execute(idCliente, transacao)
             else -> Mono.error(TransacaoInvalidaException(transacaoRequest.tipo))
+        }.map {
+            transacaoMapper.from(it)
         }
     }
 }

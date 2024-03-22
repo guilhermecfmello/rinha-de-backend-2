@@ -20,7 +20,7 @@ class CreditarUseCaseImpl(
     private val clienteMapper = ClienteMapper
 
     override fun execute(idCliente: Int, transacao: Transacao): Mono<Cliente> {
-        return Mono.fromRunnable{
+        return Mono.fromSupplier{
             val novaTransacao = transacao.copy(
                 realizadaEm = dateTimeProvider.instante()
             )
