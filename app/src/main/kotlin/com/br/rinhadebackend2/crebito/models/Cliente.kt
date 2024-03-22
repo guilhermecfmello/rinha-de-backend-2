@@ -11,8 +11,5 @@ data class Cliente(
     val id: Int,
     val nome: String? = null,
     val limite: Long? = null,
-    // TODO("Change from saldoInicial to saldo")
     val saldo: Long? = null
-){
-    constructor(): this(0)
-}
+)
